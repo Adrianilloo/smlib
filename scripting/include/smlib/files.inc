@@ -138,7 +138,7 @@ stock void File_AddToDownloadsTable(const char[] path, bool recursive=true, cons
 		return;
 	}
 
-	if (FileExists(path)) {
+	if (FileExists(path, true)) {
 
 		char fileExtension[5];
 		File_GetExtension(path, fileExtension, sizeof(fileExtension));
@@ -157,10 +157,10 @@ stock void File_AddToDownloadsTable(const char[] path, bool recursive=true, cons
 
 		AddFileToDownloadsTable(path_new);
 	}
-	else if (recursive && DirExists(path)) {
+	else if (recursive && DirExists(path, true)) {
 
 		char dirEntry[PLATFORM_MAX_PATH];
-		DirectoryListing __dir = OpenDirectory(path);
+		DirectoryListing __dir = OpenDirectory(path, true);
 
 		while (ReadDirEntry(__dir, dirEntry, sizeof(dirEntry))) {
 
@@ -189,7 +189,7 @@ stock void File_AddToDownloadsTable(const char[] path, bool recursive=true, cons
 			File_GetFileName(path, fileName, sizeof(fileName));
 			StrCat(fileName, sizeof(fileName), ".");
 
-			DirectoryListing __dir = OpenDirectory(dirName);
+			DirectoryListing __dir = OpenDirectory(dirName, true);
 			while (ReadDirEntry(__dir, dirEntry, sizeof(dirEntry))) {
 
 				if (StrEqual(dirEntry, ".") || StrEqual(dirEntry, "..")) {
@@ -217,7 +217,7 @@ stock void File_AddToDownloadsTable(const char[] path, bool recursive=true, cons
  */
 stock void File_ReadDownloadList(const char[] path)
 {
-	File file = OpenFile(path, "r");
+	File file = OpenFile(path, "r", true);
 
 	if (file  == INVALID_HANDLE) {
 		return;
@@ -300,7 +300,7 @@ stock bool File_LoadTranslations(const char[] file, bool setFailState=true)
  */
 stock int File_ToString(const char[] path, char[] buffer, int size)
 {
-	File file = OpenFile(path, "rb");
+	File file = OpenFile(path, "rb", true);
 
 	if (file == INVALID_HANDLE) {
 		buffer[0] = '\0';
@@ -345,7 +345,7 @@ stock bool File_StringToFile(const char[] path, char[] str)
  */
 stock bool File_Copy(const char[] source, const char[] destination)
 {
-	File file_source = OpenFile(source, "rb");
+	File file_source = OpenFile(source, "rb", true);
 
 	if (file_source == INVALID_HANDLE) {
 		return false;
@@ -387,10 +387,10 @@ stock bool File_Copy(const char[] source, const char[] destination)
  */
 stock bool File_CopyRecursive(const char[] path, const char[] destination, bool stop_on_error=false, int dirMode=493)
 {
-	if (FileExists(path)) {
+	if (FileExists(path, true)) {
 		return File_Copy(path, destination);
 	}
-	else if (DirExists(path)) {
+	else if (DirExists(path, true)) {
 		return Sub_File_CopyRecursive(path, destination, stop_on_error, FileType_Directory, dirMode);
 	}
 	else {
@@ -409,7 +409,7 @@ static stock bool Sub_File_CopyRecursive(const char[] path, const char[] destina
 			return false;
 		}
 
-		DirectoryListing directory = OpenDirectory(path);
+		DirectoryListing directory = OpenDirectory(path, true);
 
 		if (directory == INVALID_HANDLE) {
 			return false;
